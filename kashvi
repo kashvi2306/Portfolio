@@ -1,0 +1,712 @@
+import React, { useRef, useEffect } from "react";
+import * as THREE from "three";
+import gsap from "gsap";
+
+const Hero = () => {
+  const mountRef = useRef(null);
+
+  useEffect(() => {
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    mountRef.current.appendChild(renderer.domElement);
+
+    // Background sphere
+    const geometry = new THREE.SphereGeometry(5, 64, 64);
+    const material = new THREE.MeshStandardMaterial({
+      color: 0x4C86F0,
+      emissive: 0x00FFD1,
+      wireframe: true
+    });
+    const sphere = new THREE.Mesh(geometry, material);
+    scene.add(sphere);
+
+    // Lighting
+    const light = new THREE.PointLight(0xFF00FF, 2, 100);
+    light.position.set(10, 10, 10);
+    scene.add(light);
+
+    camera.position.z = 15;
+
+    // Animation
+    const animate = () => {
+      requestAnimationFrame(animate);
+      sphere.rotation.x += 0.005;
+      sphere.rotation.y += 0.005;
+      renderer.render(scene, camera);
+    };
+    animate();
+
+    // GSAP text animation
+    gsap.from(".hero-text", { opacity: 0, y: 50, duration: 1.5, ease: "power3.out" });
+
+    return () => mountRef.current.removeChild(renderer.domElement);
+  }, []);
+
+  return (
+    <div className="relative w-full h-screen bg-black text-white flex flex-col items-center justify-center">
+      <div ref={mountRef} className="absolute inset-0 -z-10"></div>
+      <h1 className="hero-text text-5xl font-bold neon-text">Kashvi Rastogi</h1>
+      <p className="hero-text mt-4 text-xl">Senior Operation Executive</p>
+      <p className="hero-text mt-2 text-lg text-gray-400">Billing • Data Entry • AI Tools</p>
+    </div>
+  );
+};
+
+export default Hero;
+
+import React from "react";
+import Hero from "./components/Hero";
+import About from "./components/About";
+import Experience from "./components/Experience";
+import Skills from "./components/Skills";
+import Contact from "./components/Contact";
+
+function App() {
+  return (
+    <div className="bg-black text-white font-sans">
+      <Hero />
+      <About />
+      <Experience />
+      <Skills />
+      <Contact />
+    </div>
+  );
+}
+
+export default App;
+
+
+import React from "react";
+import { motion } from "framer-motion";
+
+const About = () => {
+  return (
+    <section className="min-h-screen flex items-center justify-center bg-gradient-to-b from-black to-gray-900">
+      <motion.div
+        className="bg-gray-800 p-10 rounded-xl shadow-lg max-w-xl text-center"
+        initial={{ rotateY: 180, opacity: 0 }}
+        animate={{ rotateY: 0, opacity: 1 }}
+        transition={{ duration: 1.2 }}
+      >
+        <h2 className="text-4xl font-bold text-teal-400">About Me</h2>
+        <p className="mt-6 text-gray-300">
+          My name is Kashvi Rastogi, from Lucknow. I completed high school in 2023 (79%), 
+          intermediate in 2026 (55%), and I’m pursuing BBA from IGNOU.  
+          Professionally, I’ve worked at Prime Laundry, Neerchheer Securities, and now 
+          Raghav Services as Senior Operation Executive.
+        </p>
+      </motion.div>
+    </section>
+  );
+};
+
+export default About;
+
+
+import React, { useRef, useEffect } from "react";
+import * as THREE from "three";
+
+const Experience = () => {
+  const mountRef = useRef(null);
+
+  useEffect(() => {
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    mountRef.current.appendChild(renderer.domElement);
+
+    const jobs = [
+      { name: "Prime Laundry", color: 0x4C86F0 },
+      { name: "Neerchheer Securities", color: 0x00FFD1 },
+      { name: "Raghav Services", color: 0xFF00FF }
+    ];
+
+    jobs.forEach((job, i) => {
+      const geometry = new THREE.BoxGeometry(2, 2, 2);
+      const material = new THREE.MeshStandardMaterial({ color: job.color, emissive: job.color });
+      const cube = new THREE.Mesh(geometry, material);
+      cube.position.x = i * 5 - 5;
+      scene.add(cube);
+    });
+
+    const light = new THREE.PointLight(0xffffff, 2, 100);
+    light.position.set(10, 10, 10);
+    scene.add(light);
+
+    camera.position.z = 10;
+
+    const animate = () => {
+      requestAnimationFrame(animate);
+      scene.children.forEach(obj => {
+        if (obj.isMesh) obj.rotation.y += 0.01;
+      });
+      renderer.render(scene, camera);
+    };
+    animate();
+
+    return () => mountRef.current.removeChild(renderer.domElement);
+  }, []);
+
+  return (
+    <section className="min-h-screen relative">
+      <div ref={mountRef} className="absolute inset-0"></div>
+      <h2 className="absolute top-10 left-10 text-4xl font-bold text-purple-400">Experience</h2>
+    </section>
+  );
+};
+
+export default Experience;
+
+
+import React from "react";
+import { motion } from "framer-motion";
+
+const skills = ["Video Editing", "MS Office", "AI Tools", "Billing", "Data Entry", "Customer Support"];
+
+const Skills = () => {
+  return (
+    <section className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-gray-900 to-black">
+      <h2 className="text-4xl font-bold text-blue-400 mb-10">Skills</h2>
+      <motion.div
+        className="flex gap-6 flex-wrap justify-center"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1.5 }}
+      >
+        {skills.map((skill, i) => (
+          <motion.div
+            key={i}
+            className="bg-gray-800 p-6 rounded-lg shadow-lg text-center text-teal-300"
+            whileHover={{ scale: 1.2, rotate: 5 }}
+          >
+            {skill}
+          </motion.div>
+        ))}
+      </motion.div>
+    </section>
+  );
+};
+
+export default Skills;
+
+
+import React from "react";
+
+const Contact = () => {
+  return (
+    <section className="min-h-screen flex flex-col items-center justify-center bg-black text-white">
+      <h2 className="text-4xl font-bold text-pink-400 mb-6">Contact Me</h2>
+      <form className="flex flex-col gap-4 w-96">
+        <input type="text" placeholder="Your Name" className="p-3 rounded bg-gray-800 text-white border border-pink-400 focus:outline-none focus:ring-2 focus:ring-pink-500"/>
+        <input type="email" placeholder="Your Email" className="p-3 rounded bg-gray-800 text-white border border-pink-400 focus:outline-none focus:ring-2 focus:ring-pink-500"/>
+        <textarea placeholder="Message" className="p-3 rounded bg-gray-800 text-white border border-pink-400 focus:outline-none focus:ring-2 focus:ring-pink-500"/>
+        <button className="bg-pink-500 hover:bg-pink-600 text-white font-bold py-2 px-4 rounded">Send</button>
+      </form>
+    </section>
+  );
+};
+
+export default Contact;
+
+
+npm install gsap
+
+
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
+
+export const revealOnScroll = (target, options = {}) => {
+  gsap.from(target, {
+    scrollTrigger: {
+      trigger: target,
+      start: "top 80%", // when section enters viewport
+      toggleActions: "play none none none",
+    },
+    opacity: 0,
+    y: 50,
+    duration: 1.2,
+    ease: "power3.out",
+    ...options,
+  });
+};
+
+
+import React, { useEffect, useRef } from "react";
+import { revealOnScroll } from "../animations";
+
+const About = () => {
+  const sectionRef = useRef(null);
+
+  useEffect(() => {
+    revealOnScroll(sectionRef.current);
+  }, []);
+
+  return (
+    <section ref={sectionRef} className="min-h-screen flex items-center justify-center bg-gradient-to-b from-black to-gray-900">
+      <div className="bg-gray-800 p-10 rounded-xl shadow-lg max-w-xl text-center">
+        <h2 className="text-4xl font-bold text-teal-400">About Me</h2>
+        <p className="mt-6 text-gray-300">
+          My name is Kashvi Rastogi, from Lucknow. I completed high school in 2023 (79%), 
+          intermediate in 2026 (55%), and I’m pursuing BBA from IGNOU.  
+          Professionally, I’ve worked at Prime Laundry, Neerchheer Securities, and now 
+          Raghav Services as Senior Operation Executive.
+        </p>
+      </div>
+    </section>
+  );
+};
+
+export default About;
+
+import React, { useEffect, useRef } from "react";
+import { revealOnScroll } from "../animations";
+
+const Experience = () => {
+  const sectionRef = useRef(null);
+
+  useEffect(() => {
+    revealOnScroll(sectionRef.current, { y: 100, duration: 1.5 });
+  }, []);
+
+  return (
+    <section ref={sectionRef} className="min-h-screen flex flex-col items-center justify-center bg-black">
+      <h2 className="text-4xl font-bold text-purple-400 mb-10">Experience</h2>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+        <div className="bg-gray-800 p-6 rounded-lg shadow-lg text-blue-300">Prime Laundry – Billing Executive</div>
+        <div className="bg-gray-800 p-6 rounded-lg shadow-lg text-teal-300">Neerchheer Securities – Internship</div>
+        <div className="bg-gray-800 p-6 rounded-lg shadow-lg text-pink-300">Raghav Services – Senior Executive</div>
+      </div>
+    </section>
+  );
+};
+
+export default Experience;
+
+import React, { useEffect, useRef } from "react";
+import { revealOnScroll } from "../animations";
+
+const skills = ["Video Editing", "MS Office", "AI Tools", "Billing", "Data Entry", "Customer Support"];
+
+const Skills = () => {
+  const sectionRef = useRef(null);
+
+  useEffect(() => {
+    revealOnScroll(sectionRef.current, { y: 80, duration: 1.3 });
+  }, []);
+
+  return (
+    <section ref={sectionRef} className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-gray-900 to-black">
+      <h2 className="text-4xl font-bold text-blue-400 mb-10">Skills</h2>
+      <div className="flex gap-6 flex-wrap justify-center">
+        {skills.map((skill, i) => (
+          <div key={i} className="bg-gray-800 p-6 rounded-lg shadow-lg text-center text-teal-300 hover:scale-110 transition-transform">
+            {skill}
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+};
+
+export default Skills;
+
+
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
+
+export const staggerOnScroll = (targets, options = {}) => {
+  gsap.from(targets, {
+    scrollTrigger: {
+      trigger: targets[0], // trigger when first element enters
+      start: "top 80%",
+      toggleActions: "play none none none",
+    },
+    opacity: 0,
+    y: 50,
+    duration: 1.2,
+    ease: "power3.out",
+    stagger: 0.2, // delay between each item
+    ...options,
+  });
+};
+
+import React, { useEffect, useRef } from "react";
+import { staggerOnScroll } from "../animations";
+
+const skills = ["Video Editing", "MS Office", "AI Tools", "Billing", "Data Entry", "Customer Support"];
+
+const Skills = () => {
+  const cardsRef = useRef([]);
+
+  useEffect(() => {
+    staggerOnScroll(cardsRef.current);
+  }, []);
+
+  return (
+    <section className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-gray-900 to-black">
+      <h2 className="text-4xl font-bold text-blue-400 mb-10">Skills</h2>
+      <div className="flex gap-6 flex-wrap justify-center">
+        {skills.map((skill, i) => (
+          <div
+            key={i}
+            ref={(el) => (cardsRef.current[i] = el)}
+            className="bg-gray-800 p-6 rounded-lg shadow-lg text-center text-teal-300 hover:scale-110 transition-transform"
+          >
+            {skill}
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+};
+
+export default Skills;
+
+
+import React, { useEffect, useRef } from "react";
+import { staggerOnScroll } from "../animations";
+
+const jobs = [
+  "Prime Laundry – Billing Executive",
+  "Neerchheer Securities – Internship",
+  "Raghav Services – Senior Executive"
+];
+
+const Experience = () => {
+  const jobRefs = useRef([]);
+
+  useEffect(() => {
+    staggerOnScroll(jobRefs.current, { y: 100, duration: 1.5 });
+  }, []);
+
+  return (
+    <section className="min-h-screen flex flex-col items-center justify-center bg-black">
+      <h2 className="text-4xl font-bold text-purple-400 mb-10">Experience</h2>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+        {jobs.map((job, i) => (
+          <div
+            key={i}
+            ref={(el) => (jobRefs.current[i] = el)}
+            className="bg-gray-800 p-6 rounded-lg shadow-lg text-blue-300"
+          >
+            {job}
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+};
+
+export default Experience;
+
+
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
+
+// Parallax effect for multiple layers
+export const parallaxScroll = (target, speed = 0.5) => {
+  gsap.to(target, {
+    yPercent: speed * 100,
+    ease: "none",
+    scrollTrigger: {
+      trigger: target,
+      start: "top bottom", // starts when section enters
+      scrub: true,         // smooth continuous scroll
+    },
+  });
+};
+
+
+import React, { useEffect, useRef } from "react";
+import { parallaxScroll } from "../animations";
+
+const Hero = () => {
+  const bgRef = useRef(null);
+  const textRef = useRef(null);
+
+  useEffect(() => {
+    parallaxScroll(bgRef.current, 0.3);   // slow background
+    parallaxScroll(textRef.current, -0.2); // opposite direction for text
+  }, []);
+
+  return (
+    <section className="relative h-screen flex flex-col items-center justify-center bg-black text-white">
+      <div ref={bgRef} className="absolute inset-0 bg-gradient-to-b from-purple-900 to-black opacity-60"></div>
+      <div ref={textRef} className="z-10 text-center">
+        <h1 className="text-6xl font-bold text-blue-400">Kashvi Rastogi</h1>
+        <p className="mt-4 text-xl text-teal-300">Senior Operation Executive</p>
+        <p className="mt-2 text-gray-400">Billing • Data Entry • AI Tools</p>
+      </div>
+    </section>
+  );
+};
+
+export default Hero;
+
+
+import React, { useEffect, useRef } from "react";
+import { parallaxScroll } from "../animations";
+
+const About = () => {
+  const bgRef = useRef(null);
+  const cardRef = useRef(null);
+
+  useEffect(() => {
+    parallaxScroll(bgRef.current, 0.4);   // background moves slower
+    parallaxScroll(cardRef.current, -0.1); // card moves opposite
+  }, []);
+
+  return (
+    <section className="relative min-h-screen flex items-center justify-center">
+      <div ref={bgRef} className="absolute inset-0 bg-gradient-to-r from-blue-900 to-black opacity-40"></div>
+      <div ref={cardRef} className="bg-gray-800 p-10 rounded-xl shadow-lg max-w-xl text-center z-10">
+        <h2 className="text-4xl font-bold text-teal-400">About Me</h2>
+        <p className="mt-6 text-gray-300">
+          I’m Kashvi Rastogi from Lucknow. I completed high school in 2023 (79%), 
+          intermediate in 2026 (55%), and I’m pursuing BBA from IGNOU.  
+          Professionally, I’ve worked at Prime Laundry, Neerchheer Securities, and now 
+          Raghav Services as Senior Operation Executive.
+        </p>
+      </div>
+    </section>
+  );
+};
+
+export default About;
+
+
+import React, { useEffect, useRef } from "react";
+import { parallaxScroll } from "../animations";
+
+const Experience = () => {
+  const cubeRefs = useRef([]);
+
+  useEffect(() => {
+    cubeRefs.current.forEach((cube, i) => {
+      parallaxScroll(cube, 0.2 + i * 0.1); // each cube moves at different speed
+    });
+  }, []);
+
+  const jobs = [
+    "Prime Laundry – Billing Executive",
+    "Neerchheer Securities – Internship",
+    "Raghav Services – Senior Executive"
+  ];
+
+  return (
+    <section className="relative min-h-screen flex flex-col items-center justify-center bg-black">
+      <h2 className="text-4xl font-bold text-purple-400 mb-10">Experience</h2>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+        {jobs.map((job, i) => (
+          <div
+            key={i}
+            ref={(el) => (cubeRefs.current[i] = el)}
+            className="bg-gray-800 p-6 rounded-lg shadow-lg text-blue-300"
+          >
+            {job}
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+};
+
+export default Experience;
+
+
+export const mouseParallax = (target, intensity = 20) => {
+  window.addEventListener("mousemove", (e) => {
+    const { innerWidth, innerHeight } = window;
+    const x = (e.clientX / innerWidth - 0.5) * intensity;
+    const y = (e.clientY / innerHeight - 0.5) * intensity;
+    gsap.to(target, { x, y, duration: 0.6, ease: "power3.out" });
+  });
+};
+
+import React, { useEffect, useRef } from "react";
+import { parallaxScroll, mouseParallax } from "../animations";
+
+const Hero = () => {
+  const textRef = useRef(null);
+
+  useEffect(() => {
+    parallaxScroll(textRef.current, -0.2);
+    mouseParallax(textRef.current, 30); // interactive tilt
+  }, []);
+
+  return (
+    <section className="relative h-screen flex flex-col items-center justify-center bg-black text-white">
+      <div className="absolute inset-0 bg-gradient-to-b from-purple-900 to-black opacity-60"></div>
+      <div ref={textRef} className="z-10 text-center">
+        <h1 className="text-6xl font-bold text-blue-400">Kashvi Rastogi</h1>
+        <p className="mt-4 text-xl text-teal-300">Senior Operation Executive</p>
+        <p className="mt-2 text-gray-400">Billing • Data Entry • AI Tools</p>
+      </div>
+    </section>
+  );
+};
+
+export default Hero;
+
+import React, { useEffect } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Hero from "./components/Hero";
+import About from "./components/About";
+import Experience from "./components/Experience";
+import Skills from "./components/Skills";
+import Contact from "./components/Contact";
+
+gsap.registerPlugin(ScrollTrigger);
+
+function App() {
+  useEffect(() => {
+    gsap.utils.toArray("section").forEach((sec) => {
+      gsap.from(sec, {
+        opacity: 0,
+        y: 50,
+        duration: 1.2,
+        scrollTrigger: {
+          trigger: sec,
+          start: "top 80%",
+          toggleActions: "play none none none",
+        },
+      });
+    });
+  }, []);
+
+  return (
+    <div className="bg-black text-white font-sans">
+      <Hero />
+      <About />
+      <Experience />
+      <Skills />
+      <Contact />
+    </div>
+  );
+}
+
+export default App;
+
+import React, { useEffect, useRef } from "react";
+import { staggerOnScroll } from "../animations";
+
+const projects = [
+  {
+    title: "Billing System",
+    description: "Automated billing and invoice verification at Prime Laundry.",
+    color: "text-blue-400"
+  },
+  {
+    title: "Share Market Database",
+    description: "Internship project managing P/L sheets and market data.",
+    color: "text-teal-400"
+  },
+  {
+    title: "Tender Management",
+    description: "Scrutinizing bid documents and compliance at Raghav Services.",
+    color: "text-pink-400"
+  },
+  {
+    title: "Video Editing Showcase",
+    description: "Creative editing projects using AI tools and MS Office.",
+    color: "text-purple-400"
+  }
+];
+
+const Projects = () => {
+  const cardRefs = useRef([]);
+
+  useEffect(() => {
+    staggerOnScroll(cardRefs.current, { y: 80, duration: 1.3 });
+  }, []);
+
+  return (
+    <section className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-black to-gray-900">
+      <h2 className="text-4xl font-bold text-blue-400 mb-10">Projects</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-4/5">
+        {projects.map((proj, i) => (
+          <div
+            key={i}
+            ref={(el) => (cardRefs.current[i] = el)}
+            className="bg-gray-800 p-8 rounded-xl shadow-lg transform transition-transform hover:scale-105 hover:rotate-1"
+          >
+            <h3 className={`text-2xl font-bold mb-4 ${proj.color}`}>{proj.title}</h3>
+            <p className="text-gray-300">{proj.description}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+};
+
+export default Projects;
+
+
+import React, { useEffect } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Hero from "./components/Hero";
+import About from "./components/About";
+import Experience from "./components/Experience";
+import Skills from "./components/Skills";
+import Projects from "./components/Projects";
+import Contact from "./components/Contact";
+
+gsap.registerPlugin(ScrollTrigger);
+
+function App() {
+  useEffect(() => {
+    gsap.utils.toArray("section").forEach((sec) => {
+      gsap.from(sec, {
+        opacity: 0,
+        y: 50,
+        duration: 1.2,
+        scrollTrigger: {
+          trigger: sec,
+          start: "top 80%",
+          toggleActions: "play none none none",
+        },
+      });
+    });
+  }, []);
+
+  return (
+    <div className="bg-black text-white font-sans">
+      <Hero />
+      <About />
+      <Experience />
+      <Skills />
+      <Projects />
+      <Contact />
+    </div>
+  );
+}
+
+export default App;
+
+
+
+import Projects from "./components/Projects";
+
+function App() {
+  return (
+    <div className="bg-black text-white font-sans">
+      <Hero />
+      <About />
+      <Experience />
+      <Skills />
+      <Projects />
+      <Contact />
+    </div>
+  );
+}
